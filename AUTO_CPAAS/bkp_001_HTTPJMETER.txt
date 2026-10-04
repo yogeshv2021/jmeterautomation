@@ -1,0 +1,70 @@
+*** Settings ***
+Documentation     JM_HTTPAPI
+Suite Setup       SUITE STARTUP
+Suite Teardown    SUITE STOP
+Test Teardown     TEST STOP
+Force Tags        JM_HTTPAPI
+Default Tags      P2
+Test Timeout      5 minutes
+Library           Collections
+Library           SSHLibrary
+Library           OperatingSystem
+Library           String
+Library           BuiltIn
+Library           DateTime
+Library           DatabaseLibrary
+Library           XML
+Library           Rammbock
+Library           requests
+Library           RequestsLibrary
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_MGTS_CONNECT.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_START_STOP.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_APP_CONNECT.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_SEAGULL_RUN.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_DB_MODULE.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_LOGGING.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_CDR_MODULE.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_SUITE_MODULE.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_PCAP_MODULE.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_SHELL_MODULE.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_REMOTE_APP.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_TESTCASE_MODULE.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_XML_MODULE.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_SOAP_MODULE.txt
+Resource          /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/MODULES/AUTO_JMETER_MODULE.txt
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_MAIN_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_LOGGING_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_CDR_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_DB_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_SEAGULL_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_PCAP_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_SHELL_COMMAND_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_REMOTE_APP_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_XML_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_SOAP_DETAILS.py
+Variables         /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/CONFIG/AUTO_JMETER_DETAILS.py
+
+*** Variables ***
+${LOGGER_Validation}    0
+${CDR_Validation}    0
+${PRE_DB_Validation}    0
+${POST_DB_QUERY_Validation}    0
+${MGTS_ASSSIGNMENT}    AUTO_NIG
+${MGTS_LOADMODE}    0
+${MGTS_EXECUTION}    0
+
+
+*** Test Cases ***
+JM_CLIENT_AUTO_001
+    [Documentation]    "To Verify that behaviour jmeter started successfully"
+    [Tags]    CRIT_P1_jmeter_AUTO
+    ${Jmeter_Path}=    set variable    /opt/product/AUTOMATION/TEST_AUTOMATION_FRAMEWORK/CPAAS/INPUTS/JMETER
+    Run Jmeter    /opt/apache-jmeter-5.4.3/bin/jmeter.sh    ${Jmeter_Path}/SCENARIO/Test.jmx    ${Jmeter_Path}/LOG/Test.jtl
+    ${result}=    analyse jtl convert    ${Jmeter_Path}/LOG/Test.jtl
+    log    ${result}
+    FOR    ${ELEMENT}    IN    @{result}
+             log dictionary    ${ELEMENT}
+    END
+    Analyse Jtl Convert To Html    ${Jmeter_Path}/LOG/Test.jtl
+    Run Jmeter Analyse Jtl    /opt/apache-jmeter-5.4.3/bin/jmeter.sh    ${Jmeter_Path}/SCENARIO/Test.jmx    ${Jmeter_Path}/LOG/Test2.jtl
+    Run Jmeter Analyse Jtl Convert To Html    /opt/apache-jmeter-5.4.3/bin/jmeter.sh    ${Jmeter_Path}/SCENARIO/Test.jmx    ${Jmeter_Path}/LOG/Test3.jtl
